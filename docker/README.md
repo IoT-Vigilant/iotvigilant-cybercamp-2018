@@ -3,7 +3,7 @@
 ![Docker](https://img.shields.io/badge/docker-running-blue.svg)
 ![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)
 <p align="center">
-![logo](https://github.com/IoT-Vigilant/iotvigilant-cybercamp-2018/blob/master/images/logo_docker2.jpg)
+<img src="https://github.com/IoT-Vigilant/iotvigilant-cybercamp-2018/blob/master/images/logo_docker2.jpg">
 </p>
 
 ## Installation

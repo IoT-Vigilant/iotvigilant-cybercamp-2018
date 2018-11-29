@@ -4,7 +4,7 @@
 ![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)
 ![Docker](https://img.shields.io/badge/docker-running-blue.svg)
 <p align="center">
-![logo](https://github.com/IoT-Vigilant/iotvigilant-cybercamp-2018/blob/master/images/logo.jpg)
+<img src="https://github.com/IoT-Vigilant/iotvigilant-cybercamp-2018/blob/master/images/logo.jpg">
 </p>
 
 IoTVigilant is a Open Source development created to detect :shipit: weird network behaviors of IoT devices --or of any device with low network interaction--.
