@@ -14,7 +14,7 @@ In spite of the size of this botnet, it isn't the biggest IoT botnet that has be
 
 ### Protect from the network
 
-As the user of an IoT device rarely has access to the source code of this device and can't install any security meassure inside  it see_no_evil:, the best way to discover that the gadget has been infected :alien: and is perfeorming unexpected actions, is monitoring the network were it is connected.
+As the user of an IoT device rarely has access to the source code of this device and can't install any security meassure inside  it :see_no_evil:, the best way to discover that the gadget has been infected :alien: and is performing unexpected actions, is monitoring the network were it is connected.
 
 ## IoTVigilant
 
