@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import Flask, jsonify, request, Response
 from elasticsearch import Elasticsearch
+import time
 
 """
 ===================================
@@ -25,16 +26,16 @@ es = Elasticsearch([{'host': es_host, 'port': es_port}])
 app = Flask(__name__)
 
 
-# Receive packets data from sniffer
+# Receives packets data from sniffer
 @app.route('/save', methods=['POST'])
 def index_post():
 	if request.json: # if request body is json
-		mydata = request.json
-		# feeds 
-		result = es.index(index=es_index, doc_type=es_doc_type, body=mydata)
-		print(result)
-	
-	return Response(result, status=201, mimetype='application/json')
+		for body in request.json:
+			print (body)
+			# feeds 
+			result = es.index(index=es_index, doc_type=es_doc_type, body=body)
+			
+		return Response("{ }", status=201, mimetype='application/json')
+	return Response("{ }", status=400, mimetype='application/json')
 
-
-app.run(port=5001, debug=True)
+app.run(host='0.0.0.0', port=5001, debug=True)
