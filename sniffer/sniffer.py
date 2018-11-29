@@ -2,6 +2,7 @@
 import scapy.all as scapy
 import socket
 import json
+import time
 
 # Enumeration of the packet's layers
 def enumeration(packet):
@@ -16,8 +17,12 @@ def enumeration(packet):
 # 	return table[number]
 
 # Packet parser
+epoch_millis = lambda: int(round(time.time() * 1000))
+
 def parser(packet):
 	dict = {}
+	# Timestamp identification for Grafana and ElasticSearch
+	dict['@timestamp'] = epoch_millis()
 	layers = ""
 	# Agregation of all the packet's layers
 	for i in enumeration(packet):
@@ -29,16 +34,16 @@ def parser(packet):
 	dict['layers'] = layers
 	# Agregation of specific packet's data
 	try:
-		dict['Mac-origen'] = getattr(packet.getlayer('Ethernet'),'src')
-		dict['IP-origen'] = getattr(packet.getlayer('IP'),'src')
-		dict['IP-destino'] = getattr(packet.getlayer('IP'),'dst')
+		dict['MacOrigen'] = getattr(packet.getlayer('Ethernet'),'src')
+		dict['IpOrigen'] = getattr(packet.getlayer('IP'),'src')
+		dict['IpDestino'] = getattr(packet.getlayer('IP'),'dst')
 		if(packet.getlayer('TCP')):
-			dict['TCP-seq'] = getattr(packet.getlayer('TCP'),'seq')
-			dict['Puerto-origen'] = getattr(packet.getlayer('TCP'),'sport')
-			dict['Puerto-destino'] = getattr(packet.getlayer('TCP'),'dport')
+			dict['TCPseq'] = getattr(packet.getlayer('TCP'),'seq')
+			dict['PuertoOrigen'] = getattr(packet.getlayer('TCP'),'sport')
+			dict['PuertoDestino'] = getattr(packet.getlayer('TCP'),'dport')
 		if(packet.getlayer('UDP')):
-			dict['Puerto-origen'] = getattr(packet.getlayer('UDP'),'sport')
-			dict['Puerto-destino'] = getattr(packet.getlayer('UDP'),'dport')
+			dict['PuertoOrigen'] = getattr(packet.getlayer('UDP'),'sport')
+			dict['PuertoDestino'] = getattr(packet.getlayer('UDP'),'dport')
 
 	except Exception:
 		print('err')
