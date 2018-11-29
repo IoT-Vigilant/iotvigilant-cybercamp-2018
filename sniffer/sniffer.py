@@ -1,5 +1,5 @@
-#!/usr/bin/python
-import scapy.all as scapy
+#!/usr/bin/python3
+from scapy.all import *
 import socket
 import json
 import time
@@ -14,6 +14,27 @@ def enumeration(packet):
 
 # Epoch milliseconds calculator
 epoch_millis = lambda: int(round(time.time() * 1000))
+
+def send(data):
+	try:
+		headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+		resp = requests.post("http://192.168.43.118:5001/save", data=data, headers= headers)
+		print(resp.status_code, resp.reason)
+	except Exception:
+		print('error de conexion')
+
+data_list = []
+time_old = 0
+def store(data,time):
+	global data_list
+	global time_old
+	data_list.append(data)
+	if (time_old == 0):
+		time_old = time 
+	elif ((time - time_old) > 300000):
+		send(json.dumps(data_list))
+		data_list = []
+		time_old = 0
 
 # Packet parser
 def parser(packet):
@@ -46,12 +67,7 @@ def parser(packet):
 		print('err')
 	# Json creation and data sending
 	json_data = json.dumps(dictionary)
-	print(json_data)
-	try:
-		resp = requests.post("http://localhost:5001/save", data=json_data)
-		print(resp.status_code, resp.reason)
-	except Exception:
-		print('error de conexion')
+	store(json_data,epoch_millis())
 
 # Sniffer
-scapy.sniff(filter='ip',prn=parser)
+sniff(filter='ip',prn=parser)
