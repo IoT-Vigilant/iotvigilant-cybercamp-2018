@@ -5,6 +5,17 @@ import json
 import time
 import requests
 import _thread
+import argparse
+
+# Parsing of the arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('--ip', action='store',
+                    dest='ip',
+                    default='127.0.0.1')
+parser.add_argument('--port', action='store',
+                    dest='port',
+                    default='5001')
+parameters = parser.parse_args()
 
 # Enumeration of the packet's layers
 def enumeration(packet):
@@ -16,10 +27,11 @@ def enumeration(packet):
 # Epoch milliseconds calculator
 epoch_millis = lambda: int(round(time.time() * 1000))
 
+# Data sending function
 def send(data):
 	try:
 		headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-		resp = requests.post("http://192.168.43.118:5001/save", data=data, headers= headers)
+		resp = requests.post('http://'+parameters.ip+':'+parameters.port+'/save', data=data, headers=headers)
 		return resp.status_code
 	except Exception:
 		print('error de conexion')
@@ -44,8 +56,9 @@ def parser(packet):
 	# Agregation of specific packet's data
 	try:
 		dictionary['MacOrigen'] = getattr(packet.getlayer('Ethernet'),'src')
-		dictionary['IpOrigen'] = getattr(packet.getlayer('IP'),'src')
-		dictionary['IpDestino'] = getattr(packet.getlayer('IP'),'dst')
+		if(packet.getlayer('IP')):
+			dictionary['IpOrigen'] = getattr(packet.getlayer('IP'),'src')
+			dictionary['IpDestino'] = getattr(packet.getlayer('IP'),'dst')
 		if(packet.getlayer('TCP')):
 			dictionary['TCPseq'] = getattr(packet.getlayer('TCP'),'seq')
 			dictionary['PuertoOrigen'] = getattr(packet.getlayer('TCP'),'sport')
@@ -61,11 +74,13 @@ def parser(packet):
 	time = epoch_millis()
 	global data_list
 	global time_old
+	# Data agregation
 	data_list.append(json_data)
 	if (time_old == 0):
 		time_old = time 
 	elif ((time - time_old) > 10000):
 		try:
+			# Sending the data to the server API
 			_thread.start_new_thread(send,(json.dumps(data_list),))
 		except Exception as e:
 			print(str(e))
