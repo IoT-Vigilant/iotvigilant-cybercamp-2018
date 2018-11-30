@@ -64,7 +64,7 @@ def parser(packet):
 
 	# Agregation of specific packet's data
 	try:
-		dictionary['MacOrigen'] = getattr(packet.getlayer('Ethernet'),'src')
+		dictionary['MacOrigen'] = getattr(packet.getlayer('Ethernet'),'src').replace(':','')
 		if(packet.getlayer('IP')):
 			dictionary['IpOrigen'] = getattr(packet.getlayer('IP'),'src')
 			dictionary['IpDestino'] = getattr(packet.getlayer('IP'),'dst')
