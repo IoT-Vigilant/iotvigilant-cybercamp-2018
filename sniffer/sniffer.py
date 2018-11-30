@@ -52,7 +52,7 @@ def parser(packet):
 	# Timestamp identification for Grafana and ElasticSearch
 	dictionary['@timestamp'] = epoch_millis()
 	layers = ""
-	
+
 	# Agregation of all the packet's layers
 	for i in enumeration(packet):
 		if i == 'Raw':
@@ -87,7 +87,7 @@ def parser(packet):
 	data_list.append(json_data)
 	if (time_old == 0):
 		time_old = time 
-	elif ((time - time_old) > parameters.time):
+	elif ((time - time_old) > int(parameters.time)):
 		try:
 			# Sending the data to the server API
 			_thread.start_new_thread(send,(json.dumps(data_list),))
