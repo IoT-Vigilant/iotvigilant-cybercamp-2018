@@ -16,10 +16,11 @@ of each MAC
 ## Imports
 
 from sklearn import mixture
-from modelizer import modeler
+from modelizer import modeler,model_By_Mac
 
 import sys
 import time
+import numpy as np
 
 print(__doc__)
 
@@ -27,14 +28,38 @@ print(__doc__)
 ############ Query the database    ####################
 #######################################################
 
-def get_freeFlow(samples):
+def get_freeFlow_parse():
     freeflow =0
-    # give value to freeflow
-    return freeflow
+    maclist=[]
+    # Get last 5 minutes of data from the packet
+    # database and parse it into a freeflow format
+    return maclist, freeflow
+def get_freeFlow_processed(samples):
+    freeflow =0
+    maclist=[]
+    # get last N freeflow rows from elasticsearch
+    return maclist, freeflow
 
-def push_freeFlow(samples,freeflow):
+def push_freeFlow(maclist, freeflow):
     # Send data to Elasticsearch
     return
+
+#######################################################
+####### Posterior probability calculation #############
+#######################################################
+## This script associates macs with freeflow vectors
+## in order to collect correct probabilities for each mac
+
+
+def GMM_Probability_Pairs_calculator(maclist, freeflow_last, gmm_stack):
+    for mac, index in enumerate(maclist):
+        # Calculate predict_prob for each pair mac -> freeflow row
+        # This is going to fail because of the data arrangement, debug later
+        post_proba=gmm_stack[index].predict_proba(freeflow_last[index,:])
+        p_list.append()
+    return p_list
+
+
 
 #######################################################
 #################### Config  ##########################
@@ -56,9 +81,10 @@ def main_loop():
     freeflow_stack=[]
 
     # Get Data Processed samples from ElasticSearch
-    freeflow_stack= get_freeFlow(gmm_model_size)
+    maclist, freeflow_stack= get_freeFlow_processed(gmm_model_size)
     # Generate model
-    gmm_stack = modeler(freeflow_stack)
+    if freeflow_stack!=[]:
+        gmm_stack = model_By_Mac(maclist, freeflow_stack)
 
     #######################################################
     ############ Core Detector Main loop ##################
@@ -66,23 +92,28 @@ def main_loop():
     while 1:
         # When GMM gets old, download lastest values and model 'em
         if gmm_frames_old > gmm_remodel_period:
-            freeflow_stack= get_freeFlow(gmm_model_size)
-            gmm_stack= modeler(freeflow_stack)
+            maclist, freeflow_stack= get_freeFlow_processed(gmm_model_size)
+            gmm_stack= model_By_Mac(maclist, freeflow_stack)
 
         # Retrieves sniffed data from ElasticSearch EVERY 5 mins
         # Only last time frame
-        freeflow_last= get_freeFlow(1)
+
+        freeflow_last= get_freeFlow_parse()
+        ## TEST DATA
+        freeflow_last= np.array([[0.68, -0.016,  4],[0.68, -0.016,  0.72]])
 
         # In case we already have acces to a GMM, calculate
         # posterior probabilities
         if gmm_stack!=[]:
             # Analyzes the posterior probability of each MAC against its GMM
-            #p_macs = gmm_stack.predict_prob(freeflow_last)
+            prob_macs = GMM_Probability_Pairs_calculator(maclist, freeflow_last, gmm_stack)
+            ## Probability from each freeflow point to each Gaussian Component (rows are freeflow samples)
+            print(prob_macs)
             #freeflow_last.append(p_macs)
             gmm_frames_old +=1
 
         # Always, upload freeflow sample to populate database
-        push_freeFlow(1,freeflow_last)
+        push_freeFlow(maclist, freeflow_last)
 
 
         # Do this every N min, to wait the sniffer to get some juicy packets

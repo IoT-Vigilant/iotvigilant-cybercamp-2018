@@ -24,7 +24,19 @@ from sklearn import mixture
 ## Process data from freeflow_stack to use as imput data
 ## Remember to normalize!!
 
-def modeler(freeflow_stack):
+
+def model_By_Mac(maclist,freeflow_stack):
+    gmm_stack=[]
+    #Iterate each MAC to
+    for mac in maclist:
+        #Iterate through all the freeflow stack to generate a MAC Stack
+        for freeflow, index in enumerate(freeflow_stack):
+            freeflow_mac_array=numpy.vstack([A, freeflow[index,:]])
+        best_gmm= modeler(freeflow_mac_array)
+        gmm_stack.append(best_gmm)
+    return gmm_stack
+
+def modeler(freeflow):
     print(__doc__)
 
 
@@ -41,7 +53,6 @@ def modeler(freeflow_stack):
     C = np.array([[0., -0.1,0.3], [1.7, .4, 0.5]])
     X = np.r_[np.dot(np.random.randn(n_samples, 2), C),
               .7 * np.random.randn(n_samples, 3) + np.array([-6, 3, 5])]
-    print(X)
 
 
     ###############################################################################
@@ -57,6 +68,7 @@ def modeler(freeflow_stack):
     #         -> Number of different ports used (source, destination, UDP & TCP)
     #         -> Max number of TCP sequence (To detect big data transfers)
     #         -> Number of source IPs
+    X=freeflow
 
 
     # #############################################################################
@@ -108,7 +120,7 @@ def modeler(freeflow_stack):
 
 
 
-# Debugging plots
+# Debugging plots, Only usable for 2D features
     '''
     # Plot the BIC scores
     plt.figure(figsize=(8, 6))
