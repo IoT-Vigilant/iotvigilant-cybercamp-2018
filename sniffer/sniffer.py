@@ -27,6 +27,7 @@ def enumeration(packet):
 		packet =packet.payload
 		yield packet.name
 
+# Function from https://stackoverflow.com/questions/5998245/get-current-time-in-milliseconds-in-python
 # Epoch milliseconds calculator
 epoch_millis = lambda: int(round(time.time() * 1000))
 
