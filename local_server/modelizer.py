@@ -38,9 +38,11 @@ def modeler(freeflow_stack):
 
     # Generate random sample, two components
     np.random.seed(0)
-    C = np.array([[0., -0.1], [1.7, .4]])
+    C = np.array([[0., -0.1,0.3], [1.7, .4, 0.5]])
     X = np.r_[np.dot(np.random.randn(n_samples, 2), C),
-              .7 * np.random.randn(n_samples, 2) + np.array([-6, 3])]
+              .7 * np.random.randn(n_samples, 3) + np.array([-6, 3, 5])]
+    print(X)
+
 
     ###############################################################################
     # Sniffed Data from ES. Last N Features extracted with FreeFlow style
@@ -102,6 +104,7 @@ def modeler(freeflow_stack):
 
     print('The model uses %s covariance type' % best_gmm.covariance_type)
     print('and %d components' % best_gmm.n_components)
+    print(best_gmm)
 
 
 
