@@ -71,8 +71,8 @@ def index_post():
 			# feeds 
 			result = es.index(index=es_index, doc_type=es_doc_type, body=body)
 			
-		return Response("{ }", status=201, mimetype='application/json')
-	return Response("{ }", status=400, mimetype='application/json')
+		return Response({"message": "OK"}, status=201, mimetype='application/json')
+	return Response({"message": "Malformed request - not JSON data received"}, status=400, mimetype='application/json')
 
 # Start listening
 app.run(host='0.0.0.0', port=listen_port, debug=True)
