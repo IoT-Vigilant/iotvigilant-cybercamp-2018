@@ -6,11 +6,12 @@ import time
 import requests
 import _thread
 import argparse
+import os
 
 
 data_list = []
 time_old = 0
-
+parameters = ''
 
 def enumeration(packet):
 	"""
@@ -30,6 +31,8 @@ def send(data):
 	"""
 	Function to send the data to the configured server
 	"""
+
+	global parameters
 	try:
 		headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 		resp = requests.post('http://'+parameters.ip+':'+parameters.port+'/save', data=data, headers=headers)
@@ -42,13 +45,14 @@ def parser(packet):
 	"""
 	Sniff the traffic, store the important metadata and send it to the server
 	"""
-	global data_list
-	global time_old
+
+	global data_list, time_old, parameters
 	dictionary = {}
 
 	# Timestamp identification for Grafana and ElasticSearch
 	dictionary['@timestamp'] = epoch_millis()
 	layers = ""
+	
 	# Agregation of all the packet's layers
 	for i in enumeration(packet):
 		if i == 'Raw':
@@ -94,18 +98,26 @@ def parser(packet):
 
 
 def main():
+	global parameters
 	# Parsing arguments
-	parser = argparse.ArgumentParser()
-	parser.add_argument('--ip', action='store',
+	arg_parser = argparse.ArgumentParser()
+	arg_parser.add_argument('--ip', action='store',
 						dest='ip',
 						default='127.0.0.1')
-	parser.add_argument('--port', action='store',
+	arg_parser.add_argument('--port', action='store',
 						dest='port',
 						default='5001')
-	parser.add_argument('--time', action='store',
+	arg_parser.add_argument('--time', action='store',
 						dest='time',
 						default=300000, type=int)
-	parameters = parser.parse_args()
+	parameters = arg_parser.parse_args()
+
+	if "IOTV_SERVER" in os.environ:
+		parameters.ip = os.getenv("IOTV_SERVER")
+	if "IOTV_PORT" in os.environ:
+		parameters.port = os.getenv("IOTV_PORT")
+	if "IOTV_TIME" in os.environ:
+		parameters.time = os.getenv("IOTV_TIME")
 
 	# Start Sniffer
 	sniff(filter='ip',prn=parser)

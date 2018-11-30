@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 /root/iotvigilant/docker/sniffer/run.sh
+python3 /root/iotvigilant/sniffer/sniffer.py
