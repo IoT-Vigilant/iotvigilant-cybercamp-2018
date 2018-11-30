@@ -12,5 +12,10 @@ To **build** the docker image run in this directory: `docker build -t iotv_sniff
 ```
 sudo su
 for dev in $(ifconfig | grep eth | cut -d " " -f 1); do ifconfig $dev promisc; done
-docker run -d --net=host iotv_sniffer
+docker run -d [--env IOTV_SERVER "192.168.40.100" --env IOTV_PORT "5001" --env IOTV_TIME "300000"] --net=host iotv_sniffer
 ```
+
+**Default** values are:
+- IOTV_SERVER = 127.0.0.1
+- IOTV_PORT = 5001
+- IOTV_TIME = 300000 (ms)
