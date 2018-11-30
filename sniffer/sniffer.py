@@ -4,6 +4,7 @@ import socket
 import json
 import time
 import requests
+import _thread
 
 # Enumeration of the packet's layers
 def enumeration(packet):
@@ -19,22 +20,12 @@ def send(data):
 	try:
 		headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 		resp = requests.post("http://192.168.43.118:5001/save", data=data, headers= headers)
-		print(resp.status_code, resp.reason)
+		return resp.status_code
 	except Exception:
 		print('error de conexion')
 
 data_list = []
 time_old = 0
-def store(data,time):
-	global data_list
-	global time_old
-	data_list.append(data)
-	if (time_old == 0):
-		time_old = time 
-	elif ((time - time_old) > 300000):
-		send(json.dumps(data_list))
-		data_list = []
-		time_old = 0
 
 # Packet parser
 def parser(packet):
@@ -63,11 +54,23 @@ def parser(packet):
 			dictionary['PuertoOrigen'] = getattr(packet.getlayer('UDP'),'sport')
 			dictionary['PuertoDestino'] = getattr(packet.getlayer('UDP'),'dport')
 
-	except Exception:
-		print('err')
+	except Exception as e:
+		print(str(e))
 	# Json creation and data sending
 	json_data = json.dumps(dictionary)
-	store(json_data,epoch_millis())
+	time = epoch_millis()
+	global data_list
+	global time_old
+	data_list.append(json_data)
+	if (time_old == 0):
+		time_old = time 
+	elif ((time - time_old) > 10000):
+		try:
+			_thread.start_new_thread(send,(json.dumps(data_list),))
+		except Exception as e:
+			print(str(e))
+		data_list = []
+		time_old = 0
 
 # Sniffer
 sniff(filter='ip',prn=parser)
