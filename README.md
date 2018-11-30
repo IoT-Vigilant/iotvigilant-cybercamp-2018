@@ -1,3 +1,4 @@
+
 # Iotvigilant-Cybercamp-2018
 ![Python](https://img.shields.io/badge/python-v3.6+-blue.svg)
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
@@ -28,6 +29,38 @@ This proyect is composed of 2 parts:
 
 If you are a **Docker** fan, then you can find an installation guide of the **Sniffer** and the **Server** in the [Docker folder](https://github.com/IoT-Vigilant/iotvigilant-cybercamp-2018/tree/master/docker).
 
-## Machine Learning Algorithm
+## Requirements
 
+### Sniffer
 
+Python 3
+requirements.txt
+
+### Server
+
+Grafana v5.0+
+Elasticsearch 5.6+
+Python 3
+requirements.txt
+
+## Quick Start
+
+### Sniffer
+
+**Clone the repository**
+cd /opt
+git clone https://github.com/IoT-Vigilant/iotvigilant-cybercamp-2018.git
+
+**Run the sniffer in background**
+cd iotvigilant-cybercamp-2018/sniffer
+python3 sniffer.py --ip <*server_ip*> --port <*server_port*> --time <*time_for_the_buffer*> &
+
+### Server
+
+**Clone the repository**
+cd /opt
+git clone https://github.com/IoT-Vigilant/iotvigilant-cybercamp-2018.git
+
+**Run the server in background**
+cd iotvigilant-cybercamp-2018/local_server/
+python3 main.py
