@@ -25,13 +25,18 @@ from sklearn import mixture
 ## Remember to normalize!!
 
 
-def model_By_Mac(freeflow_stack)
-    #Iterate through all the freeflow stack to generate a MAC Stack
-    for x in mylist:
-...      if len(x)==3:
-...        print x
+def model_By_Mac(maclist,freeflow_stack):
+    gmm_stack=[]
+    #Iterate each MAC to
+    for mac in maclist:
+        #Iterate through all the freeflow stack to generate a MAC Stack
+        for freeflow, index in enumerate(freeflow_stack):
+            freeflow_mac_array=numpy.vstack([A, freeflow[index,:]])
+        best_gmm= modeler(freeflow_mac_array)
+        gmm_stack.append(best_gmm)
     return gmm_stack
-def modeler(freeflow_stack):
+
+def modeler(freeflow):
     print(__doc__)
 
 
@@ -63,6 +68,7 @@ def modeler(freeflow_stack):
     #         -> Number of different ports used (source, destination, UDP & TCP)
     #         -> Max number of TCP sequence (To detect big data transfers)
     #         -> Number of source IPs
+    X=freeflow
 
 
     # #############################################################################
