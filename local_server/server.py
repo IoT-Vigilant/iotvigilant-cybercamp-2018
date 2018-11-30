@@ -25,14 +25,14 @@ def config_params():
 	Configure the parameters used to connect to the Elasticsearch and the port where the server is going to listen
 	"""
 	global listen_port, es_host, es_port
-	
+
 	arg_parser = argparse.ArgumentParser()
 	arg_parser.add_argument('--elasticsearch-host', action='store',
 						dest='es_host',
 						default='localhost')
 	arg_parser.add_argument('--elasticsearch-port', action='store',
 						dest='es_port',
-						default='9200', type=int)
+						default=9200, type=int)
 	arg_parser.add_argument('--listen-port', action='store',
 						dest='listen_port',
 						default=5001, type=int)
