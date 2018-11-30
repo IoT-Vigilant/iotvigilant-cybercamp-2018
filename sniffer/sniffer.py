@@ -15,6 +15,9 @@ parser.add_argument('--ip', action='store',
 parser.add_argument('--port', action='store',
                     dest='port',
                     default='5001')
+parser.add_argument('--time', action='store',
+                    dest='time',
+                    default=300000, type=int)
 parameters = parser.parse_args()
 
 # Enumeration of the packet's layers
@@ -78,7 +81,7 @@ def parser(packet):
 	data_list.append(json_data)
 	if (time_old == 0):
 		time_old = time 
-	elif ((time - time_old) > 10000):
+	elif ((time - time_old) > parameters.time):
 		try:
 			# Sending the data to the server API
 			_thread.start_new_thread(send,(json.dumps(data_list),))
