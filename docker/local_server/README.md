@@ -6,6 +6,6 @@
 You can use docker compose to generate all the require environment to run the IoTVigilant server architecture.
 
 Run from this folder:
-`bash
+```bash
 docker-compose up .
-`
+```
