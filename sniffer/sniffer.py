@@ -7,21 +7,15 @@ import requests
 import _thread
 import argparse
 
-# Parsing of the arguments
-parser = argparse.ArgumentParser()
-parser.add_argument('--ip', action='store',
-                    dest='ip',
-                    default='127.0.0.1')
-parser.add_argument('--port', action='store',
-                    dest='port',
-                    default='5001')
-parser.add_argument('--time', action='store',
-                    dest='time',
-                    default=300000, type=int)
-parameters = parser.parse_args()
 
-# Enumeration of the packet's layers
+data_list = []
+time_old = 0
+
+
 def enumeration(packet):
+	"""
+	Enumeration of the packet's layers
+	"""
 	yield packet.name
 	while packet.payload:
 		packet =packet.payload
@@ -31,21 +25,27 @@ def enumeration(packet):
 # Epoch milliseconds calculator
 epoch_millis = lambda: int(round(time.time() * 1000))
 
-# Data sending function
+
 def send(data):
+	"""
+	Function to send the data to the configured server
+	"""
 	try:
 		headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 		resp = requests.post('http://'+parameters.ip+':'+parameters.port+'/save', data=data, headers=headers)
 		return resp.status_code
 	except Exception:
-		print('error de conexion')
+		print('conection error')
 
-data_list = []
-time_old = 0
 
-# Packet parser
 def parser(packet):
+	"""
+	Sniff the traffic, store the important metadata and send it to the server
+	"""
+	global data_list
+	global time_old
 	dictionary = {}
+
 	# Timestamp identification for Grafana and ElasticSearch
 	dictionary['@timestamp'] = epoch_millis()
 	layers = ""
@@ -57,6 +57,7 @@ def parser(packet):
 			layers = i
 		layers += ',' + i
 	dictionary['layers'] = layers
+
 	# Agregation of specific packet's data
 	try:
 		dictionary['MacOrigen'] = getattr(packet.getlayer('Ethernet'),'src')
@@ -73,11 +74,11 @@ def parser(packet):
 
 	except Exception as e:
 		print(str(e))
+
 	# Json creation and data sending
 	json_data = json.dumps(dictionary)
 	time = epoch_millis()
-	global data_list
-	global time_old
+
 	# Data agregation
 	data_list.append(json_data)
 	if (time_old == 0):
@@ -91,5 +92,25 @@ def parser(packet):
 		data_list = []
 		time_old = 0
 
-# Sniffer
-sniff(filter='ip',prn=parser)
+
+def main():
+	# Parsing arguments
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--ip', action='store',
+						dest='ip',
+						default='127.0.0.1')
+	parser.add_argument('--port', action='store',
+						dest='port',
+						default='5001')
+	parser.add_argument('--time', action='store',
+						dest='time',
+						default=300000, type=int)
+	parameters = parser.parse_args()
+
+	# Start Sniffer
+	sniff(filter='ip',prn=parser)
+
+
+if __name__ == "__main__":
+	main()
+	
