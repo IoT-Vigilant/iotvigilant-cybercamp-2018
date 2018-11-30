@@ -33,34 +33,34 @@ If you are a **Docker** fan, then you can find an installation guide of the **Sn
 
 ### Sniffer
 
-Python 3
-requirements.txt
+- Python 3
+- requirements.txt
 
 ### Server
 
-Grafana v5.0+
-Elasticsearch 5.6+
-Python 3
-requirements.txt
+- Grafana v5.0+
+- Elasticsearch 5.6+
+- Python 3
+- requirements.txt
 
 ## Quick Start
 
 ### Sniffer
 
 **Clone the repository**
-cd /opt
-git clone https://github.com/IoT-Vigilant/iotvigilant-cybercamp-2018.git
+- cd /opt
+- git clone https://github.com/IoT-Vigilant/iotvigilant-cybercamp-2018.git
 
 **Run the sniffer in background**
-cd iotvigilant-cybercamp-2018/sniffer
-python3 sniffer.py --ip <*server_ip*> --port <*server_port*> --time <*time_for_the_buffer*> &
+- cd iotvigilant-cybercamp-2018/sniffer
+- python3 sniffer.py --ip <*server_ip*> --port <*server_port*> --time <*time_for_the_buffer*> &
 
 ### Server
 
 **Clone the repository**
-cd /opt
-git clone https://github.com/IoT-Vigilant/iotvigilant-cybercamp-2018.git
+- cd /opt
+- git clone https://github.com/IoT-Vigilant/iotvigilant-cybercamp-2018.git
 
 **Run the server in background**
-cd iotvigilant-cybercamp-2018/local_server/
-python3 main.py
+- cd iotvigilant-cybercamp-2018/local_server/
+- python3 main.py
