@@ -8,7 +8,7 @@ import _thread
 import argparse
 import os
 
-
+filtered_macs = []
 data_list = []
 time_old = 0
 parameters = ''
@@ -110,6 +110,14 @@ def main():
 	arg_parser.add_argument('--time', action='store',
 						dest='time',
 						default=300000, type=int)
+	arg_parser.add_argument('--iface', action='store',
+                                                dest='iface',
+                                                default="eth0")
+	arg_parser.add_argument('--filtered-macs', action='store',
+                                                dest='filmacs',
+                                                default="")
+
+
 	parameters = arg_parser.parse_args()
 
 	if "IOTV_SERVER" in os.environ:
@@ -118,9 +126,20 @@ def main():
 		parameters.port = os.getenv("IOTV_PORT")
 	if "IOTV_TIME" in os.environ:
 		parameters.time = os.getenv("IOTV_TIME")
+	if "IOTV_IFACE" in os.environ:
+                parameters.iface = os.getenv("IOTV_FACE")
+	if "IOTV_FILTERED_MACS" in os.environ:
+		parameters.filmacs = os.getenv("IOTV_FILTERED_MACS")
+
+
+	print("Server address: "+parameters.ip)
+	print("Server port:"+str(parameters.port))
+	print("Using interface "+parameters.iface)
+	print("Exporting data each "+str(parameters.time)+" ms")
+	print("Filtering Macs: "+str(parameters.filmacs.lower().split(',')))
 
 	# Start Sniffer
-	sniff(filter='ip',prn=parser)
+	sniff(filter='ip',prn=parser, iface=parameters.iface, lfilter = lambda d: d.src.lower() in parameters.filmacs.lower().split(',') )
 
 
 if __name__ == "__main__":
