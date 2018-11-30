@@ -24,6 +24,13 @@ from sklearn import mixture
 ## Process data from freeflow_stack to use as imput data
 ## Remember to normalize!!
 
+
+def model_By_Mac(freeflow_stack)
+    #Iterate through all the freeflow stack to generate a MAC Stack
+    for x in mylist:
+...      if len(x)==3:
+...        print x
+    return gmm_stack
 def modeler(freeflow_stack):
     print(__doc__)
 
@@ -41,7 +48,6 @@ def modeler(freeflow_stack):
     C = np.array([[0., -0.1,0.3], [1.7, .4, 0.5]])
     X = np.r_[np.dot(np.random.randn(n_samples, 2), C),
               .7 * np.random.randn(n_samples, 3) + np.array([-6, 3, 5])]
-    print(X)
 
 
     ###############################################################################
@@ -108,7 +114,7 @@ def modeler(freeflow_stack):
 
 
 
-# Debugging plots
+# Debugging plots, Only usable for 2D features
     '''
     # Plot the BIC scores
     plt.figure(figsize=(8, 6))
