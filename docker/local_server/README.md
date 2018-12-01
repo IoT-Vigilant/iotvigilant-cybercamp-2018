@@ -7,5 +7,5 @@ You can use docker compose to generate all the require environment to run the Io
 
 Run from this folder:
 ```bash
-docker-compose up .
+docker-compose up
 ```

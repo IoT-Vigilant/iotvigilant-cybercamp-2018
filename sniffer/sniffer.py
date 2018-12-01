@@ -59,7 +59,7 @@ def parser(packet):
 			break
 		if (layers == ""):
 			layers = i
-		layers += ',' + i
+		layers += '@' + i
 	dictionary['layers'] = layers
 
 	# Agregation of specific packet's data
