@@ -42,6 +42,7 @@ If you are a **Docker** fan, then you can find an installation guide of the **Sn
 - Elasticsearch 5.6+
 - Python 3
 - requirements.txt
+- Gunicorn
 
 ## Quick Start
 
@@ -67,8 +68,13 @@ cd /opt
 git clone https://github.com/IoT-Vigilant/iotvigilant-cybercamp-2018.git
 ```
 
-**Run the server in background**
+**Create the self-signed certificate to use HTTPS*
+```bash
+openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
+```
+
+**Run the server using Gunicorn*
 ```bash
 cd iotvigilant-cybercamp-2018/local_server/
-python3 main.py
+gunicorn --certfile <*path_to_cert.pem*> --keyfile <*path_to_key.pem*>  -b 0.0.0.0:4001 server:app
 ```
