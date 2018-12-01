@@ -59,7 +59,7 @@ def parser(packet):
 			break
 		if (layers == ""):
 			layers = i
-		layers += ',' + i
+		layers += '@' + i
 	dictionary['layers'] = layers
 
 	# Agregation of specific packet's data
@@ -85,6 +85,7 @@ def parser(packet):
 
 	# Data agregation
 	data_list.append(json_data)
+	print(time - time_old)
 	if (time_old == 0):
 		time_old = time 
 	elif ((time - time_old) > int(parameters.time)):
@@ -139,7 +140,7 @@ def main():
 	print("Filtering Macs: "+str(parameters.filmacs.lower().split(',')))
 
 	# Start Sniffer
-	sniff(filter='ip',prn=parser, iface=parameters.iface, lfilter = lambda d: d.src.lower() in parameters.filmacs.lower().split(',') )
+	sniff(filter='ip',prn=parser, iface=parameters.iface, lfilter = lambda d: parameters.filmacs == "" or d.src.lower() in parameters.filmacs.lower().split(',') )
 
 
 if __name__ == "__main__":
