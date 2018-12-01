@@ -35,10 +35,10 @@ def send(data):
 	global parameters
 	try:
 		headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-		resp = requests.post('http://'+parameters.ip+':'+parameters.port+'/save', data=data, headers=headers)
+		resp = requests.post(parameters.protocol + '://'+parameters.ip+':'+parameters.port+'/save', data=data, headers=headers, verify=parameters.cert)
 		return resp.status_code
-	except Exception:
-		print('conection error')
+	except Exception as err:
+		print(str(err))
 
 
 def parser(packet):
@@ -109,6 +109,12 @@ def main():
 	arg_parser.add_argument('--port', action='store',
 						dest='port',
 						default='5001')
+	arg_parser.add_argument('--cert', action='store',
+						dest='cert',
+						default='cert.pem')
+	arg_parser.add_argument('--protocol', action='store',
+						dest='protocol',
+						default='http')
 	arg_parser.add_argument('--time', action='store',
 						dest='time',
 						default=300000, type=int)
