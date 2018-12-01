@@ -68,12 +68,12 @@ cd /opt
 git clone https://github.com/IoT-Vigilant/iotvigilant-cybercamp-2018.git
 ```
 
-**Create the self-signed certificate to use HTTPS*
+**Create the self-signed certificate to use HTTPS**
 ```bash
 openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
 ```
 
-**Run the server using Gunicorn*
+**Run the server using Gunicorn**
 ```bash
 cd iotvigilant-cybercamp-2018/local_server/
 gunicorn --certfile <*path_to_cert.pem*> --keyfile <*path_to_key.pem*>  -b 0.0.0.0:4001 server:app
