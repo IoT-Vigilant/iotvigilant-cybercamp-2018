@@ -11,4 +11,4 @@ WORKDIR /root/iotvigilant
 
 COPY run.sh /root/run.sh
 
-#ENTRYPOINT ["/bin/bash", "/root/run.sh"]
+ENTRYPOINT ["/bin/bash", "/root/run.sh"]
