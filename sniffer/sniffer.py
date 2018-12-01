@@ -85,7 +85,8 @@ def parser(packet):
 
 	# Data agregation
 	data_list.append(json_data)
-	#print(time - time_old)
+	if (parameters.verbose > 0):
+		print(time - time_old)
 	if (time_old == 0):
 		time_old = time 
 	elif ((time - time_old) > int(parameters.time)):
@@ -118,6 +119,10 @@ def main():
                                                 dest='filmacs',
                                                 default="")
 
+	arg_parser.add_argument('--verbose', action='store',
+                                                dest='verbose',
+                                                default=0, type=int)
+
 
 	parameters = arg_parser.parse_args()
 
@@ -132,12 +137,12 @@ def main():
 	if "IOTV_FILTERED_MACS" in os.environ:
 		parameters.filmacs = os.getenv("IOTV_FILTERED_MACS")
 
-
-	print("Server address: "+parameters.ip)
-	print("Server port:"+str(parameters.port))
-	print("Using interface "+parameters.iface)
-	print("Exporting data each "+str(parameters.time)+" ms")
-	print("Filtering Macs: "+str(parameters.filmacs.lower().split(',')))
+	if (parameters.verbose > 0):
+		print("Server address: "+parameters.ip)
+		print("Server port: "+str(parameters.port))
+		print("Using interface "+parameters.iface)
+		print("Exporting data each "+str(parameters.time)+" ms")
+		print("Filtering Macs: "+str(parameters.filmacs.lower().split(',')))
 
 	# Start Sniffer
 	sniff(filter='ip',prn=parser, iface=parameters.iface, lfilter = lambda d: parameters.filmacs == "" or d.src.lower() in parameters.filmacs.lower().split(',') )
