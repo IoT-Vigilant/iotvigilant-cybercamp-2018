@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import time, argparse, os
+import time, os
 
 from datetime import datetime
 from flask import Flask, jsonify, request, Response
@@ -29,28 +29,12 @@ def config_params():
 	"""
 	global listen_port, es_host, es_port
 
-	arg_parser = argparse.ArgumentParser()
-	arg_parser.add_argument('--elasticsearch-host', action='store',
-						dest='es_host',
-						default='localhost')
-	arg_parser.add_argument('--elasticsearch-port', action='store',
-						dest='es_port',
-						default=9200, type=int)
-	arg_parser.add_argument('--listen-port', action='store',
-						dest='listen_port',
-						default=5001, type=int)
-	parameters = arg_parser.parse_args()
-
 	if "IOTV_ES_HOST" in os.environ:
-		parameters.es_host = os.getenv("IOTV_ES_HOST")
+		es_host = os.getenv("IOTV_ES_HOST")
 	if "IOTV_ES_PORT" in os.environ:
-		parameters.es_port = int(os.getenv("IOTV_ES_PORT"))
+		es_port = int(os.getenv("IOTV_ES_PORT"))
 	if "IOTV_LISTEN_PORT" in os.environ:
-		parameters.listen_port = int(os.getenv("IOTV_LISTEN_PORT"))
-	
-	es_host = parameters.es_host
-	es_port = parameters.es_port
-	listen_port = parameters.listen_port
+		listen_port = int(os.getenv("IOTV_LISTEN_PORT"))
 
 config_params()
 
@@ -75,4 +59,6 @@ def index_post():
 	return Response({"message": "Malformed request - not JSON data received"}, status=400, mimetype='application/json')
 
 # Start listening
-app.run(host='0.0.0.0', port=listen_port, debug=True)
+if __name__ == "__main__":
+	app.run()
+
