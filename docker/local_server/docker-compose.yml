@@ -6,12 +6,14 @@ services:
     environment:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - '127.0.0.1:9200:9200'
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
-      - elasticdb:/usr/share/elasticsearch/data
+      - elasticdb:/usr/share/iotv_elasticsearch/data
     
   grafana:
     image: 'grafana/grafana:latest' # Use latest Grafana
@@ -20,17 +22,17 @@ services:
       - '127.0.0.1:3000:3000' # expose port 3000. Change 127.0.0.1 to 0.0.0.0 to expose grafana publicly.
     environment:
       - "GF_SECURITY_ADMIN_PASSWORD=iotvigilant!" # Password of Grafana admin user
-    #tags:
-    #  - grafana
     links:
       - elasticsearch #Ensures grafana cand find elasticsearch
   
   iotvhttpserver:
-    build: .
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     container_name: 'iotv_httpserver'
     environment:
       - "IOTV_ES_HOST=elasticsearch"
-      - "IOTV_ES_PORT=9002"
+      - "IOTV_ES_PORT=9200"
       - "IOTV_LISTEN_PORT=5001"
     ports:
       - '0.0.0.0:5001:5001'
