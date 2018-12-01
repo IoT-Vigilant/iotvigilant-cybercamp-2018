@@ -50,8 +50,12 @@ def get_freeFlow_processed(samples):
 
     return maclist_list, freeflow_list
 
-def push_freeFlow(maclist, freeflow):
+def push_freeFlow(maclist, freeflow, prob_list=[]):
     # Send data to Elasticsearch
+    if prob_list=[]:
+        #SEND DATA TO ELASTICSEARCH WITHOUT PROBABILITY DATA
+    else
+        #SEND DATA INCLUDING prob_list
     return
 
 #######################################################
@@ -105,7 +109,7 @@ def main_loop():
             maclist_stack, freeflow_stack= get_freeFlow_processed(gmm_model_size)
             gmm_stack= model_By_Mac(maclist_stack, freeflow_stack)
 
-        # Retrieves sniffed data from ElasticSearch EVERY 5 mins
+        # Retrieves sniffed data from ElasticSearch every "freeflow_time_size_seconds"
         # Only last time frame
 
         maclist_last, freeflow_last= get_freeFlow_parse()
@@ -114,12 +118,14 @@ def main_loop():
         # In case we already have acces to a GMM, calculate
         # posterior probabilities
         if gmm_stack!=[]:
+            prob_macs = []
             # Analyzes the posterior probability of each MAC against its GMM
             ## Probability from each freeflow point to each Gaussian Component (rows are freeflow samples)
             prob_macs = GMM_Probability_Pairs_calculator(maclist_last, freeflow_last, gmm_stack)
             print(prob_macs)
             #freeflow_last.append(p_macs)
             gmm_frames_old +=1
+            push_freeFlow(maclist_last, freeflow_last,prob_macs)
 
         # Always, upload freeflow sample to populate database
         push_freeFlow(maclist_last, freeflow_last)
