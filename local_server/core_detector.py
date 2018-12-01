@@ -30,15 +30,25 @@ print(__doc__)
 
 def get_freeFlow_parse():
     freeflow =0
-    maclist=[]
     # Get last 5 minutes of data from the packet
     # database and parse it into a freeflow format
+
+    ## TEST DATA ## Results of parsing should be like these
+    maclist=["0A:03:32:AD:32:41", "0A:03:32:AD:32:42", "0A:03:32:AD:32:43"]
+    freeflow= np.array([[0.68, -0.016,  4],[0.68, -0.016,  0.72], [0.61, -0.013,  0.74]])
     return maclist, freeflow
+
 def get_freeFlow_processed(samples):
-    freeflow =0
-    maclist=[]
+    freeflow_list=[]
+    maclist_list=[]
     # get last N freeflow rows from elasticsearch
-    return maclist, freeflow
+
+    ## TEST DATA ## Results of parsing should be like these
+    for i in range(samples):
+        freeflow_list.append(np.array([[0.68, -0.016,  4], [0.5, -0.5,  0.92], [0.21, -0.13,  0.31]]))
+        maclist_list.append(["0A:03:32:AD:32:41", "0A:03:32:AD:32:42", "0A:03:32:AD:32:43"])
+
+    return maclist_list, freeflow_list
 
 def push_freeFlow(maclist, freeflow):
     # Send data to Elasticsearch
@@ -51,12 +61,12 @@ def push_freeFlow(maclist, freeflow):
 ## in order to collect correct probabilities for each mac
 
 
-def GMM_Probability_Pairs_calculator(maclist, freeflow_last, gmm_stack):
-    for mac, index in enumerate(maclist):
+def GMM_Probability_Pairs_calculator(maclist_last, freeflow_last, gmm_stack):
+    p_list=[]
+    for index, mac in enumerate(maclist_last):
         # Calculate predict_prob for each pair mac -> freeflow row
-        # This is going to fail because of the data arrangement, debug later
-        post_proba=gmm_stack[index].predict_proba(freeflow_last[index,:])
-        p_list.append()
+        post_proba=gmm_stack[index].predict_proba(freeflow_last[index,:].reshape(1, -1))
+        p_list.append(np.amax(post_proba))
     return p_list
 
 
@@ -81,10 +91,10 @@ def main_loop():
     freeflow_stack=[]
 
     # Get Data Processed samples from ElasticSearch
-    maclist, freeflow_stack= get_freeFlow_processed(gmm_model_size)
+    maclist_stack, freeflow_stack= get_freeFlow_processed(gmm_model_size)
     # Generate model
     if freeflow_stack!=[]:
-        gmm_stack = model_By_Mac(maclist, freeflow_stack)
+        gmm_stack = model_By_Mac(maclist_stack, freeflow_stack)
 
     #######################################################
     ############ Core Detector Main loop ##################
@@ -92,34 +102,31 @@ def main_loop():
     while 1:
         # When GMM gets old, download lastest values and model 'em
         if gmm_frames_old > gmm_remodel_period:
-            maclist, freeflow_stack= get_freeFlow_processed(gmm_model_size)
-            gmm_stack= model_By_Mac(maclist, freeflow_stack)
+            maclist_stack, freeflow_stack= get_freeFlow_processed(gmm_model_size)
+            gmm_stack= model_By_Mac(maclist_stack, freeflow_stack)
 
         # Retrieves sniffed data from ElasticSearch EVERY 5 mins
         # Only last time frame
 
-        freeflow_last= get_freeFlow_parse()
-        ## TEST DATA
-        freeflow_last= np.array([[0.68, -0.016,  4],[0.68, -0.016,  0.72]])
+        maclist_last, freeflow_last= get_freeFlow_parse()
+
 
         # In case we already have acces to a GMM, calculate
         # posterior probabilities
         if gmm_stack!=[]:
             # Analyzes the posterior probability of each MAC against its GMM
-            prob_macs = GMM_Probability_Pairs_calculator(maclist, freeflow_last, gmm_stack)
             ## Probability from each freeflow point to each Gaussian Component (rows are freeflow samples)
+            prob_macs = GMM_Probability_Pairs_calculator(maclist_last, freeflow_last, gmm_stack)
             print(prob_macs)
             #freeflow_last.append(p_macs)
             gmm_frames_old +=1
 
         # Always, upload freeflow sample to populate database
-        push_freeFlow(maclist, freeflow_last)
-
+        push_freeFlow(maclist_last, freeflow_last)
 
         # Do this every N min, to wait the sniffer to get some juicy packets
         print("waiting")
         time.sleep(freeflow_time_size_seconds)
-
 
 ##
 # Looping code by https://stackoverflow.com/questions/8685695/how-do-i-run-long-term-infinite-python-processes
