@@ -14,8 +14,8 @@ import itertools
 import time
 
 from scipy import linalg
-import matplotlib.pyplot as plt
-import matplotlib as mpl
+#import matplotlib.pyplot as plt
+#import matplotlib as mpl
 import numpy
 
 from sklearn import mixture
@@ -28,23 +28,27 @@ from sklearn import mixture
 
 def model_By_Mac(maclist_stack,freeflow_stack):
     gmm_stack=[]
+    mac_gmm_stack=[]
     freeflow_mac_array= []
     # Obtain list of unique MACs
-    UniqueMACs = set(x for l in maclist_stack for x in l)
-
+    UniqueMACs= list(set(maclist_stack))
     #Iterate each MAClist to
     for mac in UniqueMACs:
         freeflow_mac_array=[]
-        for index, freeflow in enumerate(freeflow_stack):
-            # Search for mac index in that freeflow
-            mac_index_found=maclist_stack[index].index(mac)
+        # Search for mac index in the freeflow_stack
+        maclist_indexes = [index for index, value in enumerate(maclist_stack) if value == mac]
+
+        for idx in maclist_indexes:
             if freeflow_mac_array==[]:
-                freeflow_mac_array=freeflow[mac_index_found,:]
+                freeflow_mac_array=numpy.array([freeflow_stack[idx]])
             else:
-                freeflow_mac_array=numpy.vstack([freeflow_mac_array, freeflow[mac_index_found,:]])
-        best_gmm= modeler(freeflow_mac_array)
-        gmm_stack.append(best_gmm)
-    return gmm_stack
+                freeflow_mac_array=numpy.vstack([freeflow_mac_array, freeflow_stack[idx]])
+
+        if freeflow_mac_array.shape[0]>=10:
+            best_gmm= modeler(freeflow_mac_array)
+            gmm_stack.append(best_gmm)
+            mac_gmm_stack.append(mac)
+    return gmm_stack, mac_gmm_stack
 
 def modeler(freeflow):
     print(__doc__)
@@ -116,10 +120,10 @@ def modeler(freeflow):
 
 
     bic = np.array(bic)
-    color_iter = itertools.cycle(['navy', 'turquoise', 'cornflowerblue',
-                                  'darkorange'])
-    clf = best_gmm
-    bars = []
+    # color_iter = itertools.cycle(['navy', 'turquoise', 'cornflowerblue',
+    #                               'darkorange'])
+    # clf = best_gmm
+    # bars = []
 
     elapsed = time.time() - t
     print('Time dedicated to GMM model selection %.5f seconds' % elapsed)
