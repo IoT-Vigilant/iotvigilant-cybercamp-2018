@@ -16,6 +16,7 @@ import time
 from scipy import linalg
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import numpy
 
 from sklearn import mixture
 
@@ -25,13 +26,22 @@ from sklearn import mixture
 ## Remember to normalize!!
 
 
-def model_By_Mac(maclist,freeflow_stack):
+def model_By_Mac(maclist_stack,freeflow_stack):
     gmm_stack=[]
-    #Iterate each MAC to
-    for mac in maclist:
-        #Iterate through all the freeflow stack to generate a MAC Stack
-        for freeflow, index in enumerate(freeflow_stack):
-            freeflow_mac_array=numpy.vstack([A, freeflow[index,:]])
+    freeflow_mac_array= []
+    # Obtain list of unique MACs
+    UniqueMACs = set(x for l in maclist_stack for x in l)
+
+    #Iterate each MAClist to
+    for mac in UniqueMACs:
+        freeflow_mac_array=[]
+        for index, freeflow in enumerate(freeflow_stack):
+            # Search for mac index in that freeflow
+            mac_index_found=maclist_stack[index].index(mac)
+            if freeflow_mac_array==[]:
+                freeflow_mac_array=freeflow[mac_index_found,:]
+            else:
+                freeflow_mac_array=numpy.vstack([freeflow_mac_array, freeflow[mac_index_found,:]])
         best_gmm= modeler(freeflow_mac_array)
         gmm_stack.append(best_gmm)
     return gmm_stack
