@@ -2,22 +2,22 @@ version: "3"
 services:
   elasticsearch:
     image: 'elasticsearch:6.5.1' # use elasticsearch version 6.5.1, latest abailable at this momment
-    container_name: iotv_elasticsearch
+    container_name: iotv_elasticsearch_nf
     environment:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    #ports:   #uncomment if you want the host to be able to connect to elasticsearch
-    #  - '127.0.0.1:9200:9200'
+    ports:
+      - '127.0.0.1:9200:9200'
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
-      - elasticdb:/usr/share/iotv_elasticsearch/data
+      - elasticdbnf:/usr/share/iotv_elasticsearch_nf/data
     
   grafana:
     image: 'grafana/grafana:latest' # Use latest Grafana
-    container_name: iotv_grafana
+    container_name: iotv_grafana_nf
     ports:
       - '127.0.0.1:3000:3000' # expose port 3000. Change 127.0.0.1 to 0.0.0.0 to expose grafana publicly.
     environment:
@@ -25,20 +25,19 @@ services:
     links:
       - elasticsearch #Ensures grafana cand find elasticsearch
   
-  iotvhttpserver:
+  iotvnfcapd_try:
     build:
       context: .
       dockerfile: ./Dockerfile
-    container_name: 'iotv_httpserver'
+    container_name: 'iotv_nfcapd'
     environment:
       - "IOTV_ES_HOST=elasticsearch"
       - "IOTV_ES_PORT=9200"
-      - "IOTV_LISTEN_PORT=5001"
     ports:
-      - '0.0.0.0:5001:5001'
+      - '0.0.0.0:2055:2055'
     links:
       - elasticsearch
 
 volumes:
-  elasticdb:
+  elasticdbnf:
     driver: local
