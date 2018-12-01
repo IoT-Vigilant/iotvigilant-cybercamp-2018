@@ -85,7 +85,7 @@ def parser(packet):
 
 	# Data agregation
 	data_list.append(json_data)
-	print(time - time_old)
+	#print(time - time_old)
 	if (time_old == 0):
 		time_old = time 
 	elif ((time - time_old) > int(parameters.time)):
