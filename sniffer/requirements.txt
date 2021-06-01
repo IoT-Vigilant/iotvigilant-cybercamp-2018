@@ -5,4 +5,4 @@ requests==2.20.1
 scapy==2.4.0
 scapy-http==1.8.2
 scapy-python3==0.26
-urllib3==1.24.1
+urllib3==1.26.5
